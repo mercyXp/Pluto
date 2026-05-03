@@ -129,7 +129,7 @@ export function handleConversationMessage(
 
     if (resolution.status === "no_match") {
       return {
-        reply: `I couldn’t find ${activeIntent.recipientName} in your contacts.`,
+        reply: `I couldn't find ${activeIntent.recipientName} in your contacts.`,
         nextState: "error",
         intent: activeIntent
       };
@@ -155,7 +155,7 @@ export function handleConversationMessage(
     });
 
     return {
-      reply: `You’re sending ${activeIntent.amount.toFixed(2)} SOL to ${resolution.contact.name} on the Solana network. Ready to proceed?`,
+      reply: `You're sending ${activeIntent.amount.toFixed(2)} SOL to ${resolution.contact.name} on the Solana network. Ready to proceed?`,
       nextState: "ready_to_confirm",
       intent: activeIntent,
       pendingTransaction

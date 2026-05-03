@@ -31,11 +31,11 @@ export function BalanceCard({
             <p className="text-sm font-medium text-pluto-slate">Total balance</p>
             <div className="mt-3 flex items-center gap-2">
               <h2 className="text-[40px] font-semibold leading-none tracking-normal text-pluto-navy">
-                {hidden ? "•••• SOL" : formatSol(wallet.balanceSol)}
+                {hidden ? "**** SOL" : formatSol(wallet.balanceSol)}
               </h2>
             </div>
             <p className="mt-2 text-sm text-pluto-slate">
-              {hidden ? "•••• USD" : `${formatUsd(wallet.fiatValueUsd)} USD`}
+              {hidden ? "**** USD" : `${formatUsd(wallet.fiatValueUsd)} USD`}
             </p>
           </div>
           <div className="flex items-center gap-2">

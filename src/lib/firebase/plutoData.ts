@@ -238,7 +238,7 @@ export async function saveContact(uid: string, contact: Contact) {
     doc(db, "users", uid, "contacts", contact.id),
     cleanForFirestore({
       ...contact,
-      sortIndex: Date.now(),
+      sortIndex: -Date.now(),
       updatedAt: serverTimestamp()
     }),
     { merge: true }

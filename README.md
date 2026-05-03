@@ -91,6 +91,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
 ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_ID=
@@ -190,7 +191,7 @@ After deployment, set `NEXT_PUBLIC_PLUTO_PROGRAM_ID=8MEhzdrriUEbKK1s4MmNzK876Ymy
 ## Roadmap
 
 - Production wallet custody and recovery flow
-- Real Firebase auth/session wiring in UI
+- Production account management and wallet recovery
 - Real Devnet contact addresses and faucet funding helper
 - AI-assisted parser behind the rule-based parser
 - Push notifications for received payments

@@ -21,6 +21,10 @@ export function SettingsScreen({
   onSettingsChange: (settings: PlutoSettings) => void;
   onBack: () => void;
 }) {
+  async function copyAddress() {
+    await navigator.clipboard?.writeText(wallet.publicKey);
+  }
+
   function updateSettings(patch: Partial<PlutoSettings>) {
     onSettingsChange({ ...settings, ...patch });
   }
@@ -35,7 +39,12 @@ export function SettingsScreen({
         </header>
 
         <SettingsSection title="Wallet">
-          <SettingRow label="Wallet address" value={shortenAddress(wallet.publicKey, 6, 6)} icon={<Copy className="h-4 w-4" />} />
+          <SettingRow
+            label="Wallet address"
+            value={shortenAddress(wallet.publicKey, 6, 6)}
+            icon={<Copy className="h-4 w-4" />}
+            onClick={copyAddress}
+          />
           <SettingRow label="Export recovery phrase" value="Placeholder" />
         </SettingsSection>
 
@@ -101,19 +110,35 @@ function SettingsSection({
 function SettingRow({
   label,
   value,
-  icon
+  icon,
+  onClick
 }: {
   label: string;
   value: string;
   icon?: ReactNode;
+  onClick?: () => void;
 }) {
-  return (
-    <div className="flex items-center justify-between gap-4 px-4 py-4">
+  const content = (
+    <>
       <p className="text-sm font-semibold text-pluto-navy">{label}</p>
       <div className="flex items-center gap-2 text-right text-sm text-pluto-slate">
         <span>{value}</span>
         {icon}
       </div>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left">
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-4 px-4 py-4">
+      {content}
     </div>
   );
 }

@@ -7,16 +7,24 @@ import type { Activity } from "@/types";
 
 export function ActivityList({
   activities,
-  onActivityClick
+  onActivityClick,
+  onViewAll
 }: {
   activities: Activity[];
   onActivityClick?: (activity: Activity) => void;
+  onViewAll?: () => void;
 }) {
   return (
     <section className="space-y-3">
       <SectionHeader
         title="Recent activity"
-        action={<button className="text-sm font-semibold text-pluto-blue">View all</button>}
+        action={
+          onViewAll ? (
+            <button onClick={onViewAll} className="text-sm font-semibold text-pluto-blue">
+              View all
+            </button>
+          ) : undefined
+        }
       />
       <Card className="space-y-1 p-2">
         {activities.map((activity) => {

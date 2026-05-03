@@ -28,6 +28,7 @@ import {
 } from "@/lib/firebase/plutoData";
 import { handleConversationMessage } from "@/lib/intent/conversationManager";
 import { AuthScreen, CreateWalletScreen, ImportWalletScreen, PinScreen } from "@/screens/AuthScreens";
+import { ActivitiesScreen } from "@/screens/ActivitiesScreen";
 import { ActivityDetailScreen } from "@/screens/ActivityDetailScreen";
 import { AddFundsScreen } from "@/screens/AddFundsScreen";
 import { ContactDetailScreen } from "@/screens/ContactDetailScreen";
@@ -585,6 +586,15 @@ export function PlutoApp() {
       />
     );
   }
+  if (screen === "activities") {
+    return (
+      <ActivitiesScreen
+        activities={activities}
+        onBack={() => setScreen("app")}
+        onSelectActivity={openActivity}
+      />
+    );
+  }
   if (screen === "contact-detail" && activeContact) {
     return (
       <ContactDetailScreen
@@ -664,6 +674,7 @@ export function PlutoApp() {
         onContacts={() => setScreen("contacts")}
         onContact={openContact}
         onActivity={openActivity}
+        onActivities={() => setScreen("activities")}
         onSettings={() => setScreen("settings")}
       />
       <VoiceLayer
@@ -678,7 +689,7 @@ export function PlutoApp() {
         onSettings={() => setScreen("settings")}
       />
       {process.env.NODE_ENV !== "production" ? (
-        <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-30 flex justify-center">
+        <div className="pointer-events-none absolute right-4 top-24 z-30 flex justify-end">
           <div className="pointer-events-auto rounded-full border border-pluto-line bg-white/90 p-1 shadow-sm backdrop-blur">
             <Button variant="ghost" size="sm" onClick={enterDemo}>
               Demo reset

@@ -93,10 +93,12 @@ button {
 
 @keyframes token-send {
   0% {
-    transform: translate(0, -50%);
+    left: 1rem;
+    transform: translateY(-50%);
   }
   100% {
-    transform: translate(13.25rem, -50%);
+    left: calc(100% - 3.25rem);
+    transform: translateY(-50%);
   }
 }
 

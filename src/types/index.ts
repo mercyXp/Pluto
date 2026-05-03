@@ -21,6 +21,7 @@ export type Screen =
   | "receive"
   | "request"
   | "contacts"
+  | "activities"
   | "contact-detail"
   | "contact-editor"
   | "activity-detail"

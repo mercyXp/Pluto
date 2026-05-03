@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, Copy, QrCode, Share2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { PlutoLogo } from "@/components/ui/Logo";
@@ -16,11 +17,26 @@ export function RequestPaymentScreen({
   request: PaymentRequest;
   onBack: () => void;
 }) {
+  const [view, setView] = useState<"qr" | "link">("qr");
   const qrCode = useQrCode(request.paymentUrl);
   const fiatValue = request.amountSol * 173;
 
   async function copyLink() {
     await navigator.clipboard?.writeText(request.paymentUrl);
+  }
+
+  async function shareRequest() {
+    if (navigator.share) {
+      await navigator
+        .share({
+          title: "Pluto payment request",
+          text: `${request.fromName}, Pluto is requesting ${formatSol(request.amountSol)}${request.memo ? ` for ${request.memo}` : ""}: ${request.paymentUrl}`
+        })
+        .catch(() => undefined);
+      return;
+    }
+
+    await copyLink();
   }
 
   return (
@@ -50,36 +66,47 @@ export function RequestPaymentScreen({
         </Card>
 
         <div className="grid grid-cols-2 rounded-[1.25rem] bg-blue-50 p-1">
-          {["QR code", "Payment link"].map((item, index) => (
+          {[
+            { label: "QR code", value: "qr" as const },
+            { label: "Payment link", value: "link" as const }
+          ].map((item) => (
             <button
-              key={item}
+              key={item.value}
+              onClick={() => setView(item.value)}
               className={cn(
                 "h-10 rounded-2xl text-sm font-semibold",
-                index === 0 ? "bg-white text-pluto-blue shadow-sm" : "text-pluto-slate"
+                view === item.value ? "bg-white text-pluto-blue shadow-sm" : "text-pluto-slate"
               )}
             >
-              {item}
+              {item.label}
             </button>
           ))}
         </div>
 
         <Card className="grid gap-4 p-5">
-          <div className="grid aspect-square w-full place-items-center rounded-[1.5rem] border border-pluto-line bg-white p-4">
-            {qrCode ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img alt="Solana Pay request QR" src={qrCode} className="h-full w-full rounded-2xl" />
-            ) : (
-              <QrCode className="h-16 w-16 text-pluto-blue/40" />
-            )}
-          </div>
+          {view === "qr" ? (
+            <div className="grid aspect-square w-full place-items-center rounded-[1.5rem] border border-pluto-line bg-white p-4">
+              {qrCode ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img alt="Solana Pay request QR" src={qrCode} className="h-full w-full rounded-2xl" />
+              ) : (
+                <QrCode className="h-16 w-16 text-pluto-blue/40" />
+              )}
+            </div>
+          ) : (
+            <div className="rounded-[1.25rem] border border-pluto-line bg-white p-4">
+              <p className="text-xs font-semibold uppercase text-pluto-slate">Payment link</p>
+              <p className="mt-2 break-all text-sm font-semibold leading-6 text-pluto-blue">{request.paymentUrl}</p>
+            </div>
+          )}
           <button onClick={copyLink} className="truncate rounded-[1rem] bg-pluto-mist px-3 py-3 text-left text-xs font-semibold text-pluto-blue">
-            {shortenAddress(request.paymentUrl, 20, 14)}
+            {view === "qr" ? shortenAddress(request.paymentUrl, 20, 14) : "Copy payment link"}
           </button>
         </Card>
 
         <div className="mt-auto grid grid-cols-2 gap-2">
           <Button variant="secondary" icon={<Copy className="h-4 w-4" />} onClick={copyLink}>Copy link</Button>
-          <Button icon={<Share2 className="h-4 w-4" />}>Share request</Button>
+          <Button icon={<Share2 className="h-4 w-4" />} onClick={shareRequest}>Share request</Button>
         </div>
         <p className="text-center text-xs text-pluto-slate">Only {request.fromName} can pay this request.</p>
       </div>

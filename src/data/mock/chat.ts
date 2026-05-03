@@ -6,7 +6,7 @@ export const mockConversationPresets = {
   send: [
     "Send 0.20 SOL to Muape K",
     "Sure, I can help with that. Let me confirm the details for you.",
-    "You’re sending 0.20 SOL to Muape K on the Solana network. Ready to proceed?"
+    "You're sending 0.20 SOL to Muape K on the Solana network. Ready to proceed?"
   ],
   request: [
     "Request 0.50 SOL from Alex for dinner",

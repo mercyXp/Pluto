@@ -27,6 +27,20 @@ export function ReceiveScreen({
     await navigator.clipboard?.writeText(wallet.publicKey);
   }
 
+  async function shareReceive() {
+    if (navigator.share) {
+      await navigator
+        .share({
+          title: "Pluto SOL address",
+          text: `Send SOL to my Pluto wallet: ${paymentUrl}`
+        })
+        .catch(() => undefined);
+      return;
+    }
+
+    await copyAddress();
+  }
+
   return (
     <main className="min-h-[100dvh] bg-pluto-mist px-4 pb-6 pt-5 safe-pt">
       <div className="mx-auto flex min-h-[calc(100dvh-2rem)] max-w-md flex-col gap-5">
@@ -67,7 +81,7 @@ export function ReceiveScreen({
 
         <div className="mt-auto grid grid-cols-2 gap-2">
           <Button variant="secondary" icon={<Copy className="h-4 w-4" />} onClick={copyAddress}>Copy address</Button>
-          <Button icon={<Share2 className="h-4 w-4" />}>Share request</Button>
+          <Button icon={<Share2 className="h-4 w-4" />} onClick={shareReceive}>Share request</Button>
         </div>
         <p className="text-center text-xs leading-5 text-pluto-slate">
           Only send SOL on Solana. Sending other assets may result in loss.

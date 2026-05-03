@@ -33,7 +33,7 @@ export function useVoiceRecorder({
         stream.getTracks().forEach((track) => track.stop());
         transcribe().catch(() => {
           setState("error");
-          onError("I couldn’t hear that clearly. Please try again.");
+          onError("I couldn't hear that clearly. Please try again.");
         });
       };
       mediaRecorderRef.current = recorder;
@@ -67,7 +67,7 @@ export function useVoiceRecorder({
     setState("idle");
 
     if (data.transcript) onTranscript(data.transcript);
-    else onError("I couldn’t hear that clearly. Please try again.");
+    else onError("I couldn't hear that clearly. Please try again.");
   }
 
   function toggle() {

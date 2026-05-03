@@ -20,6 +20,7 @@ export function HomeLayer({
   onContacts,
   onContact,
   onActivity,
+  onActivities,
   onSettings
 }: {
   wallet: WalletSummary;
@@ -33,6 +34,7 @@ export function HomeLayer({
   onContacts: () => void;
   onContact: (contact: Contact) => void;
   onActivity: (activity: Activity) => void;
+  onActivities: () => void;
   onSettings: () => void;
 }) {
   return (
@@ -69,7 +71,7 @@ export function HomeLayer({
           onAddContact={onAddContact}
           onSelectContact={onContact}
         />
-        <ActivityList activities={activities} onActivityClick={onActivity} />
+        <ActivityList activities={activities} onActivityClick={onActivity} onViewAll={onActivities} />
 
         <div className="mx-auto mt-auto h-1.5 w-12 rounded-full bg-pluto-line" />
       </div>
