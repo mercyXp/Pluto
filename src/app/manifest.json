@@ -1,0 +1,16 @@
+{
+  "name": "Pluto",
+  "short_name": "Pluto",
+  "description": "Voice-first Solana wallet.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7FBFF",
+  "theme_color": "#0A84FF",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
