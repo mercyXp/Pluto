@@ -1,0 +1,18 @@
+[package]
+name = "pluto-program"
+version = "0.1.0"
+description = "Pluto transfer Anchor program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "pluto_program"
+
+[features]
+no-entrypoint = []
+no-idl = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.31.1"

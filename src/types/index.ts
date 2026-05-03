@@ -73,6 +73,8 @@ export interface Activity {
   counterpartyAddress?: string;
   feeSol?: number;
   status?: "confirmed" | "pending" | "failed";
+  programId?: string;
+  transactionRecord?: string;
 }
 
 export interface ChatMessage {

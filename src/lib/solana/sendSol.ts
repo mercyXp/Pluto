@@ -7,6 +7,7 @@ import {
   sendAndConfirmTransaction
 } from "@solana/web3.js";
 import { getSolanaConnection } from "@/lib/solana/connection";
+import { sendWithMemoOnChain } from "@/lib/solana/plutoProgram";
 import { keypairFromSecret } from "@/lib/solana/wallet";
 import type { Network } from "@/types";
 
@@ -16,11 +17,13 @@ export async function sendSolTransaction({
   toPublicKey,
   amountSol,
   memo,
+  recipientAlias,
   network = "devnet"
 }: {
   toPublicKey: string;
   amountSol: number;
   memo?: string;
+  recipientAlias?: string;
   network?: Network;
 }) {
   if (!Number.isFinite(amountSol) || amountSol <= 0) {
@@ -34,6 +37,22 @@ export async function sendSolTransaction({
   const fromKeypair = keypairFromSecret(process.env.DEMO_WALLET_SECRET_KEY);
   const to = new PublicKey(toPublicKey);
   const lamports = Math.round(amountSol * LAMPORTS_PER_SOL);
+  const connection = getSolanaConnection(network);
+
+  if (
+    process.env.NEXT_PUBLIC_PLUTO_PROGRAM_ID &&
+    process.env.NEXT_PUBLIC_PLUTO_PROGRAM_ID !== "PLACEHOLDER"
+  ) {
+    return sendWithMemoOnChain({
+      connection,
+      senderKeypair: fromKeypair,
+      recipientAddress: toPublicKey,
+      amountSol,
+      recipientAlias: recipientAlias || to.toBase58().slice(0, 8),
+      memo
+    });
+  }
+
   const transaction = new Transaction().add(
     SystemProgram.transfer({
       fromPubkey: fromKeypair.publicKey,
@@ -52,8 +71,8 @@ export async function sendSolTransaction({
     );
   }
 
-  const connection = getSolanaConnection(network);
-  return sendAndConfirmTransaction(connection, transaction, [fromKeypair], {
+  const signature = await sendAndConfirmTransaction(connection, transaction, [fromKeypair], {
     commitment: "confirmed"
   });
+  return { signature };
 }

@@ -74,8 +74,8 @@ src/
 ## Setup
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -101,7 +101,16 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 DEMO_WALLET_SECRET_KEY=
 DEMO_REAL_SEND=false
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_PLUTO_PROGRAM_ID=
 ```
+
+## ElevenLabs Integration
+
+Pluto uses secure server-side ElevenLabs API routes so the API key never ships to the browser:
+
+- `POST /api/voice/transcribe` sends recorded audio to ElevenLabs Speech to Text using `ELEVENLABS_STT_MODEL_ID` (`scribe_v2` by default).
+- `POST /api/voice/speak` sends Pluto responses to ElevenLabs Text to Speech using `ELEVENLABS_TTS_MODEL_ID` and `ELEVENLABS_VOICE_ID`.
+- If ElevenLabs is unavailable, the UI keeps working with text responses.
 
 ## Demo Commands
 
@@ -130,6 +139,38 @@ users/{userId}/requests/{requestId}
 ```
 
 Firestore rules are included in `firestore.rules` and restrict each user to their own documents. Demo mode signs in anonymously when Firebase is configured, seeds demo contacts/activity once, and then keeps contact edits, send receipts, payment requests, wallet metadata, and settings synced to Firestore. If Firebase is unavailable, the app falls back to local demo state so the hackathon flow remains usable.
+
+## Solana Program
+
+Pluto includes a custom Anchor program for the Solana hackathon track.
+
+**Generated Program ID:** `8MEhzdrriUEbKK1s4MmNzK876YmyUAwtF1sWJ9qhdYH`
+
+**Deployment status:** source and app wiring are included, but Devnet deploy from this Windows machine is blocked until the elevated Windows SDK libraries are installed or the program is built from Linux/WSL. Anchor needs `kernel32.lib` to compile Rust build scripts on Windows.
+
+**What it does:** every real send transaction in Pluto can call the `send_with_memo` instruction, which:
+
+1. Transfers SOL via CPI to the System Program.
+2. Stores an on-chain record with sender, recipient, recipient alias, amount, memo, and timestamp.
+
+**Solscan link after deployment:**
+`https://solscan.io/account/8MEhzdrriUEbKK1s4MmNzK876YmyUAwtF1sWJ9qhdYH?cluster=devnet`
+
+**Source code:** `pluto-program/programs/pluto-program/src/lib.rs`
+
+The app calls this program from `src/lib/solana/plutoProgram.ts` when `NEXT_PUBLIC_PLUTO_PROGRAM_ID` is set and `DEMO_REAL_SEND=true` is enabled with a funded `DEMO_WALLET_SECRET_KEY`. Otherwise, the hackathon demo falls back to simulated sends so judging remains reliable.
+
+### Deploy The Program
+
+On Linux/WSL, or after installing the Windows SDK desktop libraries with elevated Build Tools:
+
+```bash
+cd pluto-program
+anchor build
+anchor deploy --provider.cluster devnet
+```
+
+After deployment, set `NEXT_PUBLIC_PLUTO_PROGRAM_ID=8MEhzdrriUEbKK1s4MmNzK876YmyUAwtF1sWJ9qhdYH` locally and in Vercel.
 
 ## Deployment
 

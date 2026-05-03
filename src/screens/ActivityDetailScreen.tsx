@@ -57,6 +57,8 @@ export function ActivityDetailScreen({
           <ReceiptRow label="Network" value={activity.network === "mainnet-beta" ? "Solana Mainnet" : "Solana Devnet"} />
           <ReceiptRow label="Network fee" value={`~${activity.feeSol || 0.000005} SOL`} />
           <ReceiptRow label="Signature" value={shortenAddress(signature, 7, 7)} />
+          {activity.programId ? <ReceiptRow label="Program" value={shortenAddress(activity.programId, 7, 7)} /> : null}
+          {activity.transactionRecord ? <ReceiptRow label="On-chain record" value={shortenAddress(activity.transactionRecord, 7, 7)} /> : null}
         </Card>
 
         <div className="mt-auto grid gap-2">

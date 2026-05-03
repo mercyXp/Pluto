@@ -450,11 +450,17 @@ export function PlutoApp() {
           amountSol: pendingTransaction.amountSol,
           toPublicKey: pendingTransaction.recipient.walletAddress,
           memo: pendingTransaction.memo,
+          recipientAlias: pendingTransaction.recipient.name,
           demoMode: wallet.demoMode
         })
       });
 
-      const data = (await response.json()) as { signature?: string; error?: string };
+      const data = (await response.json()) as {
+        signature?: string;
+        programId?: string;
+        transactionRecord?: string;
+        error?: string;
+      };
       if (!response.ok || !data.signature) throw new Error(data.error || "Transaction failed");
 
       const activity: Activity = {
@@ -469,7 +475,9 @@ export function PlutoApp() {
         network: pendingTransaction.network,
         counterpartyAddress: pendingTransaction.recipient.walletAddress,
         feeSol: pendingTransaction.feeSol,
-        status: "confirmed"
+        status: "confirmed",
+        programId: data.programId,
+        transactionRecord: data.transactionRecord
       };
 
       setSignature(data.signature);

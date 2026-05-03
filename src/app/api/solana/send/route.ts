@@ -9,6 +9,7 @@ export async function POST(request: Request) {
       toPublicKey?: string;
       amountSol?: number;
       memo?: string;
+      recipientAlias?: string;
       demoMode?: boolean;
     };
 
@@ -26,14 +27,25 @@ export async function POST(request: Request) {
       });
     }
 
-    const signature = await sendSolTransaction({
+    const result = await sendSolTransaction({
       toPublicKey: body.toPublicKey,
       amountSol: body.amountSol,
       memo: body.memo,
+      recipientAlias: body.recipientAlias,
       network: "devnet"
     });
 
-    return NextResponse.json({ signature });
+    return NextResponse.json(
+      "programId" in result
+        ? {
+            signature: result.signature,
+            programId: result.programId,
+            transactionRecord: result.transactionRecord
+          }
+        : {
+            signature: result.signature
+          }
+    );
   } catch (error) {
     return NextResponse.json(
       {

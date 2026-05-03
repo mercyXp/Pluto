@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Pluto is a voice-first Solana wallet built for the DEV3PACK Hackathon.",
+  "packageManager": "pnpm@10.17.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,6 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
     "@solana/web3.js": "^1.98.0",
     "clsx": "^2.1.1",
     "firebase": "^11.2.0",
