@@ -106,6 +106,24 @@ export interface PaymentRequest {
   paymentUrl: string;
 }
 
+export interface PlutoSettings {
+  voiceEnabled: boolean;
+  voiceStyle: "calm" | "bright" | "quiet";
+  biometricEnabled: boolean;
+  requireConfirmation: boolean;
+  network: Network;
+}
+
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  email?: string | null;
+  createdAt?: string;
+  defaultWalletId: string;
+  demoMode: boolean;
+  settings: PlutoSettings;
+}
+
 export interface WalletSummary {
   ownerName: string;
   walletName: string;

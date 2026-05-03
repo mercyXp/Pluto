@@ -12,9 +12,27 @@ export function AuthScreen({
   onContinue,
   onDemo
 }: {
-  onContinue: () => void;
+  onContinue: (email: string, password: string) => Promise<void> | void;
   onDemo: () => void;
 }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function submit() {
+    setError("");
+    setLoading(true);
+    try {
+      await onContinue(email, password);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unable to create or sign in to your account.";
+      setError(message.replace(/^Firebase:\s*/i, ""));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <AuthFrame title="Create account" subtitle="Use a simple account for the demo. Firebase Auth is wired through env configuration.">
       <div className="space-y-3">
@@ -22,17 +40,32 @@ export function AuthScreen({
           <span className="text-sm font-semibold text-pluto-navy">Email</span>
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-pluto-slate" />
-            <TextInput className="pl-11" placeholder="samuel@pluto.dev" type="email" />
+            <TextInput
+              className="pl-11"
+              placeholder="samuel@pluto.dev"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
           </div>
         </label>
         <label className="block space-y-2">
           <span className="text-sm font-semibold text-pluto-navy">Password</span>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-pluto-slate" />
-            <TextInput className="pl-11" placeholder="••••••••" type="password" />
+            <TextInput
+              className="pl-11"
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
           </div>
         </label>
-        <Button size="lg" className="w-full" onClick={onContinue}>Continue</Button>
+        {error ? <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm leading-5 text-red-700">{error}</p> : null}
+        <Button size="lg" className="w-full" onClick={submit} disabled={loading || !email || password.length < 6}>
+          {loading ? "Connecting..." : "Continue"}
+        </Button>
         <Button size="lg" variant="ghost" className="w-full" onClick={onDemo}>Use demo mode</Button>
       </div>
     </AuthFrame>

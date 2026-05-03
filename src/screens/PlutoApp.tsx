@@ -9,7 +9,23 @@ import { Button } from "@/components/ui/Button";
 import { demoActivities } from "@/data/mock/activities";
 import { starterMessages } from "@/data/mock/chat";
 import { demoContacts } from "@/data/mock/contacts";
+import { demoSettings } from "@/data/mock/settings";
 import { demoWallet } from "@/data/mock/wallet";
+import { auth } from "@/lib/firebase/client";
+import {
+  createOrSignInWithEmail,
+  firebaseDataAvailable,
+  initializePlutoUser,
+  loadPlutoData,
+  removeContact as removeFirebaseContact,
+  saveActivity as saveFirebaseActivity,
+  saveContact as saveFirebaseContact,
+  savePaymentRequest as saveFirebasePaymentRequest,
+  saveSettings as saveFirebaseSettings,
+  saveWallet as saveFirebaseWallet,
+  signInDemoUser,
+  type PlutoFirebaseState
+} from "@/lib/firebase/plutoData";
 import { handleConversationMessage } from "@/lib/intent/conversationManager";
 import { AuthScreen, CreateWalletScreen, ImportWalletScreen, PinScreen } from "@/screens/AuthScreens";
 import { ActivityDetailScreen } from "@/screens/ActivityDetailScreen";
@@ -31,8 +47,10 @@ import type {
   OrbState,
   PaymentRequest,
   PendingTransaction,
+  PlutoSettings,
   Screen
 } from "@/types";
+import { onAuthStateChanged } from "firebase/auth";
 
 function messageId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -73,6 +91,10 @@ export function PlutoApp() {
   const [messages, setMessages] = useState<ChatMessage[]>(starterMessages);
   const [activities, setActivities] = useState<Activity[]>(demoActivities);
   const [contacts, setContacts] = useState<Contact[]>(demoContacts);
+  const [wallet, setWallet] = useState(demoWallet);
+  const [settings, setSettings] = useState<PlutoSettings>(demoSettings);
+  const [firebaseUid, setFirebaseUid] = useState<string | undefined>();
+  const [backendLabel, setBackendLabel] = useState(firebaseDataAvailable ? "Firebase ready" : "Local fallback");
   const [homeRevealed, setHomeRevealed] = useState(false);
   const [orbState, setOrbState] = useState<OrbState>("idle");
   const [conversationState, setConversationState] =
@@ -87,7 +109,14 @@ export function PlutoApp() {
   const [signature, setSignature] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  const wallet = demoWallet;
+  const applyFirebaseState = useCallback((state: PlutoFirebaseState) => {
+    setFirebaseUid(state.profile.uid);
+    setWallet(state.wallet);
+    setContacts(state.contacts);
+    setActivities(state.activities);
+    setSettings(state.settings);
+    setBackendLabel(state.profile.demoMode ? "Firebase demo sync" : "Firebase sync");
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -97,6 +126,21 @@ export function PlutoApp() {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!auth) return undefined;
+
+    return onAuthStateChanged(auth, (user) => {
+      if (!user || window.localStorage.getItem("pluto-demo-entered") !== "true") return;
+
+      void loadPlutoData(user.uid)
+        .then(applyFirebaseState)
+        .catch(() => {
+          setFirebaseUid(undefined);
+          setBackendLabel("Local fallback");
+        });
+    });
+  }, [applyFirebaseState]);
 
   const addMessage = useCallback((message: Omit<ChatMessage, "id" | "createdAt">) => {
     setMessages((current) => [
@@ -110,6 +154,7 @@ export function PlutoApp() {
   }, []);
 
   const speak = useCallback(async (text: string) => {
+    if (!settings.voiceEnabled) return;
     try {
       const response = await fetch("/api/voice/speak", {
         method: "POST",
@@ -124,13 +169,15 @@ export function PlutoApp() {
     } catch {
       // Voice playback is intentionally non-blocking so the hackathon demo stays usable offline.
     }
-  }, []);
+  }, [settings.voiceEnabled]);
 
-  const enterDemo = useCallback(() => {
+  const enterDemo = useCallback(async () => {
     window.localStorage.setItem("pluto-demo-entered", "true");
     setMessages(starterMessages);
     setActivities(demoActivities);
     setContacts(demoContacts);
+    setWallet(demoWallet);
+    setSettings(demoSettings);
     setPendingIntent(undefined);
     setPendingTransaction(undefined);
     setPaymentRequest(undefined);
@@ -142,7 +189,64 @@ export function PlutoApp() {
     setHomeRevealed(false);
     setOrbState("idle");
     setScreen("app");
-  }, []);
+
+    if (!firebaseDataAvailable) {
+      setBackendLabel("Local demo fallback");
+      return;
+    }
+
+    try {
+      const user = await signInDemoUser();
+      const state = await initializePlutoUser(user, { demoMode: true });
+      applyFirebaseState(state);
+    } catch {
+      setFirebaseUid(undefined);
+      setBackendLabel("Local demo fallback");
+    }
+  }, [applyFirebaseState]);
+
+  const handleAuthContinue = useCallback(
+    async (email: string, password: string) => {
+      if (!firebaseDataAvailable) {
+        throw new Error("Firebase is not configured in this environment.");
+      }
+
+      const user = await createOrSignInWithEmail(email, password);
+      const state = await initializePlutoUser(user, { demoMode: false });
+      applyFirebaseState(state);
+      setScreen("create-wallet");
+    },
+    [applyFirebaseState]
+  );
+
+  const continueWalletSetup = useCallback(async () => {
+    if (firebaseUid) {
+      await saveFirebaseWallet(firebaseUid, wallet).catch(() => setBackendLabel("Firebase write issue"));
+    }
+    setScreen("pin");
+  }, [firebaseUid, wallet]);
+
+  const enterAppAfterSetup = useCallback(async () => {
+    window.localStorage.setItem("pluto-demo-entered", "true");
+    if (firebaseUid) {
+      await Promise.all([
+        saveFirebaseSettings(firebaseUid, settings),
+        saveFirebaseWallet(firebaseUid, wallet)
+      ]).catch(() => setBackendLabel("Firebase write issue"));
+    }
+    setScreen("app");
+  }, [firebaseUid, settings, wallet]);
+
+  const updateSettings = useCallback(
+    (nextSettings: PlutoSettings) => {
+      setSettings(nextSettings);
+      setWallet((current) => ({ ...current, network: nextSettings.network }));
+      if (firebaseUid) {
+        void saveFirebaseSettings(firebaseUid, nextSettings).catch(() => setBackendLabel("Firebase write issue"));
+      }
+    },
+    [firebaseUid]
+  );
 
   const processMessage = useCallback(
     (text: string) => {
@@ -210,6 +314,9 @@ export function PlutoApp() {
       } else if (result.paymentRequest) {
         setPaymentRequest(result.paymentRequest);
         setOrbState("success");
+        if (firebaseUid) {
+          void saveFirebasePaymentRequest(firebaseUid, result.paymentRequest).catch(() => setBackendLabel("Firebase write issue"));
+        }
         window.setTimeout(() => setScreen("request"), 760);
       } else if (result.intent.intent === "receive") {
         setOrbState("idle");
@@ -225,7 +332,7 @@ export function PlutoApp() {
         window.setTimeout(() => setHomeRevealed(true), 500);
       }
     },
-    [addMessage, contacts, conversationState, pendingIntent, speak, wallet]
+    [addMessage, contacts, conversationState, firebaseUid, pendingIntent, speak, wallet]
   );
 
   const chooseContact = useCallback(
@@ -267,9 +374,12 @@ export function PlutoApp() {
         text: `${contact.name} is saved in your Pluto contacts.`,
         variant: "success"
       });
+      if (firebaseUid) {
+        void saveFirebaseContact(firebaseUid, contact).catch(() => setBackendLabel("Firebase write issue"));
+      }
       setScreen("contact-detail");
     },
-    [addMessage]
+    [addMessage, firebaseUid]
   );
 
   const removeContact = useCallback(
@@ -281,9 +391,12 @@ export function PlutoApp() {
         role: "pluto",
         text: `${contact.name} has been removed from your contacts.`
       });
+      if (firebaseUid) {
+        void removeFirebaseContact(firebaseUid, contact.id).catch(() => setBackendLabel("Firebase write issue"));
+      }
       setScreen("contacts");
     },
-    [addMessage]
+    [addMessage, firebaseUid]
   );
 
   const openActivity = useCallback((activity: Activity) => {
@@ -344,24 +457,26 @@ export function PlutoApp() {
       const data = (await response.json()) as { signature?: string; error?: string };
       if (!response.ok || !data.signature) throw new Error(data.error || "Transaction failed");
 
+      const activity: Activity = {
+        id: messageId("activity"),
+        type: "send",
+        title: `Sent to ${pendingTransaction.recipient.name}`,
+        timestamp: "Just now",
+        amountSol: -pendingTransaction.amountSol,
+        contactName: pendingTransaction.recipient.name,
+        signature: data.signature,
+        memo: pendingTransaction.memo,
+        network: pendingTransaction.network,
+        counterpartyAddress: pendingTransaction.recipient.walletAddress,
+        feeSol: pendingTransaction.feeSol,
+        status: "confirmed"
+      };
+
       setSignature(data.signature);
-      setActivities((current) => [
-        {
-          id: messageId("activity"),
-          type: "send",
-          title: `Sent to ${pendingTransaction.recipient.name}`,
-          timestamp: "Just now",
-          amountSol: -pendingTransaction.amountSol,
-          contactName: pendingTransaction.recipient.name,
-          signature: data.signature,
-          memo: pendingTransaction.memo,
-          network: pendingTransaction.network,
-          counterpartyAddress: pendingTransaction.recipient.walletAddress,
-          feeSol: pendingTransaction.feeSol,
-          status: "confirmed"
-        },
-        ...current
-      ]);
+      setActivities((current) => [activity, ...current]);
+      if (firebaseUid) {
+        void saveFirebaseActivity(firebaseUid, activity).catch(() => setBackendLabel("Firebase write issue"));
+      }
       setOrbState("success");
       navigator.vibrate?.([35, 30, 35]);
       setScreen("success");
@@ -377,7 +492,7 @@ export function PlutoApp() {
     } finally {
       setIsSending(false);
     }
-  }, [addMessage, pendingTransaction, wallet.demoMode]);
+  }, [addMessage, firebaseUid, pendingTransaction, wallet.demoMode]);
 
   const doneAfterSuccess = useCallback(() => {
     if (pendingTransaction) {
@@ -420,10 +535,10 @@ export function PlutoApp() {
       />
     );
   }
-  if (screen === "auth") return <AuthScreen onContinue={() => setScreen("create-wallet")} onDemo={enterDemo} />;
-  if (screen === "create-wallet") return <CreateWalletScreen onBack={() => setScreen("auth")} onContinue={() => setScreen("pin")} />;
-  if (screen === "import-wallet") return <ImportWalletScreen onBack={() => setScreen("onboarding")} onContinue={() => setScreen("pin")} />;
-  if (screen === "pin") return <PinScreen onContinue={enterDemo} />;
+  if (screen === "auth") return <AuthScreen onContinue={handleAuthContinue} onDemo={enterDemo} />;
+  if (screen === "create-wallet") return <CreateWalletScreen onBack={() => setScreen("auth")} onContinue={continueWalletSetup} />;
+  if (screen === "import-wallet") return <ImportWalletScreen onBack={() => setScreen("onboarding")} onContinue={continueWalletSetup} />;
+  if (screen === "pin") return <PinScreen onContinue={enterAppAfterSetup} />;
   if (screen === "confirm" && pendingTransaction) {
     return (
       <ConfirmationScreen
@@ -509,7 +624,17 @@ export function PlutoApp() {
       />
     );
   }
-  if (screen === "settings") return <SettingsScreen wallet={wallet} onBack={() => setScreen("app")} />;
+  if (screen === "settings") {
+    return (
+      <SettingsScreen
+        wallet={wallet}
+        settings={settings}
+        backendLabel={backendLabel}
+        onSettingsChange={updateSettings}
+        onBack={() => setScreen("app")}
+      />
+    );
+  }
 
   return (
     <main className="relative mx-auto h-[100dvh] max-w-md overflow-hidden bg-[radial-gradient(circle_at_50%_-15%,rgba(10,132,255,0.18),transparent_22rem),linear-gradient(180deg,#ffffff_0%,#f7fbff_54%,#eef7ff_100%)]">

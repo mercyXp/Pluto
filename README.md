@@ -23,6 +23,7 @@ Voice command -> parsed intent -> contact check -> confirmation screen -> Solana
 - Receive SOL QR screen
 - Solana Pay request QR/payment link screen
 - Firebase client setup and Firestore rules
+- Firebase Auth + Firestore-backed profile, wallet metadata, contacts, activity, requests, and settings
 - ElevenLabs STT/TTS API routes with text fallback
 - Solana Devnet send route with explicit hackathon demo shortcut
 
@@ -128,7 +129,7 @@ users/{userId}/transactions/{transactionId}
 users/{userId}/requests/{requestId}
 ```
 
-Firestore rules are included in `firestore.rules` and restrict each user to their own documents.
+Firestore rules are included in `firestore.rules` and restrict each user to their own documents. Demo mode signs in anonymously when Firebase is configured, seeds demo contacts/activity once, and then keeps contact edits, send receipts, payment requests, wallet metadata, and settings synced to Firestore. If Firebase is unavailable, the app falls back to local demo state so the hackathon flow remains usable.
 
 ## Deployment
 

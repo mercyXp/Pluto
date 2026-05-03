@@ -23,6 +23,7 @@ export const firebaseConfigured = [
 ].every(Boolean);
 
 export function getFirebaseApp(): FirebaseApp | null {
+  if (typeof window === "undefined") return null;
   if (!firebaseConfigured) return null;
   return getApps()[0] ?? initializeApp(firebaseConfig);
 }
