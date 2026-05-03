@@ -332,6 +332,11 @@ export function VoiceLayer({
                 ref={inputRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") return;
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }}
                 placeholder="Ask Pluto"
                 className="min-w-0 flex-1 border-0 bg-transparent text-[18px] font-semibold tracking-normal text-pluto-navy outline-none placeholder:text-pluto-slate/70"
               />
