@@ -13,12 +13,14 @@ export function SettingsScreen({
   settings,
   backendLabel,
   onSettingsChange,
+  onDemoReset,
   onBack
 }: {
   wallet: WalletSummary;
   settings: PlutoSettings;
   backendLabel?: string;
   onSettingsChange: (settings: PlutoSettings) => void;
+  onDemoReset?: () => void;
   onBack: () => void;
 }) {
   async function copyAddress() {
@@ -82,6 +84,26 @@ export function SettingsScreen({
         <SettingsSection title="Backend">
           <SettingRow label="Firebase sync" value={backendLabel || "Local fallback"} />
         </SettingsSection>
+
+        {process.env.NODE_ENV !== "production" && onDemoReset ? (
+          <SettingsSection title="Developer">
+            <button
+              type="button"
+              onClick={onDemoReset}
+              className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+            >
+              <span>
+                <span className="block text-sm font-semibold text-pluto-navy">Demo reset</span>
+                <span className="mt-1 block text-xs leading-5 text-pluto-slate">
+                  Restore seeded contacts, activity, wallet state, and chat.
+                </span>
+              </span>
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-pluto-blue">
+                Reset
+              </span>
+            </button>
+          </SettingsSection>
+        ) : null}
 
         <SettingsSection title="About">
           <SettingRow label="Pluto" value="DEV3PACK Hackathon" />

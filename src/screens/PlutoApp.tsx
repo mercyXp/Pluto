@@ -5,7 +5,6 @@ import { HomeLayer } from "@/components/wallet/HomeLayer";
 import { VoiceLayer } from "@/components/voice/VoiceLayer";
 import { ConfirmationScreen } from "@/components/transactions/ConfirmationScreen";
 import { SuccessScreen } from "@/components/transactions/SuccessScreen";
-import { Button } from "@/components/ui/Button";
 import { demoActivities } from "@/data/mock/activities";
 import { starterMessages } from "@/data/mock/chat";
 import { demoContacts } from "@/data/mock/contacts";
@@ -649,6 +648,7 @@ export function PlutoApp() {
         settings={settings}
         backendLabel={backendLabel}
         onSettingsChange={updateSettings}
+        onDemoReset={enterDemo}
         onBack={() => setScreen("app")}
       />
     );
@@ -688,15 +688,6 @@ export function PlutoApp() {
         onAddContact={() => openAddContact()}
         onSettings={() => setScreen("settings")}
       />
-      {process.env.NODE_ENV !== "production" ? (
-        <div className="pointer-events-none absolute right-4 top-24 z-30 flex justify-end">
-          <div className="pointer-events-auto rounded-full border border-pluto-line bg-white/90 p-1 shadow-sm backdrop-blur">
-            <Button variant="ghost" size="sm" onClick={enterDemo}>
-              Demo reset
-            </Button>
-          </div>
-        </div>
-      ) : null}
     </main>
   );
 }
