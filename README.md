@@ -1,4 +1,4 @@
-# Pluto
+### Pluto
 
 Pluto is a voice-first Solana wallet built for the DEV3PACK Hackathon. It uses ElevenLabs for voice input/output, Solana Devnet for payments, Firebase for user data, and Vercel for deployment.
 
