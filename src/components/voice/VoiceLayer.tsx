@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioWaveform, ChevronRight, ChevronDown, ChevronUp, Menu, Mic, MoreHorizontal, Plus, X } from "lucide-react";
+import { AudioWaveform, ChevronRight, ChevronDown, ChevronUp, Mic, MoreHorizontal, Plus, X } from "lucide-react";
 import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChatBubble } from "@/components/voice/ChatBubble";
 import { PlutoOrb } from "@/components/voice/PlutoOrb";
