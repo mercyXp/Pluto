@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioWaveform, ChevronRight, Menu, Mic, MoreHorizontal, Plus, X } from "lucide-react";
+import { AudioWaveform, ChevronRight, ChevronDown, ChevronUp, Menu, Mic, MoreHorizontal, Plus, X } from "lucide-react";
 import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChatBubble } from "@/components/voice/ChatBubble";
 import { PlutoOrb } from "@/components/voice/PlutoOrb";
@@ -200,7 +200,7 @@ export function VoiceLayer({
             onClick={() => onRevealChange(!isHomeRevealed)}
             className="grid h-11 w-11 place-items-center rounded-full text-pluto-navy transition hover:bg-pluto-mist"
           >
-            <Menu className="h-6 w-6" />
+            {isHomeRevealed ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
           </button>
 
           <div className="flex items-center gap-1 rounded-full px-3 py-2 text-[22px] font-semibold tracking-normal text-pluto-navy">
