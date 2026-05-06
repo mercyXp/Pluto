@@ -216,7 +216,6 @@ export function VoiceLayer({
               </>
             ) : (
               <>
-                <span>Pluto</span>
                 <span className="text-pluto-slate">Chat</span>
               </>
             )}
