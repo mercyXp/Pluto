@@ -2,9 +2,9 @@ import type { Contact } from "@/types";
 
 export const demoContacts: Contact[] = [
   {
-    id: "muape-k",
-    name: "Muape K",
-    aliases: ["muape", "mk", "muape k"],
+    id: "mwape-k",
+    name: "Mwape K",
+    aliases: ["mwape", "mk", "mwape k"],
     walletAddress: "8MuaPekDEV3PACKvoiceFirstSolanaWalletk9f2",
     walletEnding: "k9f2",
     trusted: true,
@@ -14,16 +14,16 @@ export const demoContacts: Contact[] = [
     notes: "Lunch, hackathon demos, and quick reimbursements."
   },
   {
-    id: "muape-a",
-    name: "Muape A",
-    aliases: ["muape", "muape a"],
+    id: "mwape-a",
+    name: "Mwape A",
+    aliases: ["mwape", "mwape a"],
     walletAddress: "5MuaPeaDEV3PACKvoiceFirstSolanaWallet2p91",
     walletEnding: "2p91",
     trusted: true,
     recent: false,
     lastTransactionSummary: "Requested 0.30 SOL",
     color: "bg-cyan-100 text-cyan-700",
-    notes: "Second Muape contact used for ambiguity testing."
+    notes: "Second Mwape contact used for ambiguity testing."
   },
   {
     id: "alex",
@@ -60,5 +60,137 @@ export const demoContacts: Contact[] = [
     lastTransactionSummary: "Received 2.00 SOL",
     color: "bg-violet-100 text-violet-700",
     notes: "Needs review before larger sends."
+  },
+  {
+    id: "chanda",
+    name: "Chanda",
+    aliases: ["chanda", "ch"],
+    walletAddress: "3ChandaDEV3PACKvoiceFirstSolanaWallet4cNx",
+    walletEnding: "4cNx",
+    trusted: true,
+    recent: true,
+    lastTransactionSummary: "Sent 1.00 SOL",
+    color: "bg-emerald-100 text-emerald-700",
+    notes: "Reliable contact for event payments."
+  },
+  {
+    id: "mwape",
+    name: "Mwape",
+    aliases: ["mwape", "mw"],
+    walletAddress: "6MwapeDEV3PACKvoiceFirstSolanaWallet2mWp",
+    walletEnding: "2mWp",
+    trusted: true,
+    recent: false,
+    lastTransactionSummary: "Received 0.75 SOL",
+    color: "bg-teal-100 text-teal-700",
+    notes: "Splits transport costs regularly."
+  },
+  {
+    id: "thandiwe",
+    name: "Thandiwe",
+    aliases: ["thandiwe", "thandi", "tw"],
+    walletAddress: "7ThandiDEV3PACKvoiceFirstSolanaWallet5tHw",
+    walletEnding: "5tHw",
+    trusted: true,
+    recent: true,
+    lastTransactionSummary: "Requested 0.50 SOL",
+    color: "bg-pink-100 text-pink-700",
+    notes: "Team lunch and group buys."
+  },
+  {
+    id: "james",
+    name: "James",
+    aliases: ["james", "jim"],
+    walletAddress: "1JamesDEV3PACKvoiceFirstSolanaWallet3jMs",
+    walletEnding: "3jMs",
+    trusted: true,
+    recent: false,
+    lastTransactionSummary: "Sent 2.50 SOL",
+    color: "bg-orange-100 text-orange-700",
+    notes: "Business partner, larger transfers."
+  },
+  {
+    id: "nalwimba",
+    name: "Nalwimba",
+    aliases: ["nalwimba", "nali", "nl"],
+    walletAddress: "9NalwiDEV3PACKvoiceFirstSolanaWallet8nLb",
+    walletEnding: "8nLb",
+    trusted: true,
+    recent: true,
+    lastTransactionSummary: "Received 0.30 SOL",
+    color: "bg-yellow-100 text-yellow-700",
+    notes: "Hackathon teammate."
+  },
+  {
+    id: "sophie",
+    name: "Sophie",
+    aliases: ["sophie", "soph"],
+    walletAddress: "4SophieDEV3PACKvoiceFirstSolanaWallet6sPh",
+    walletEnding: "6sPh",
+    trusted: false,
+    recent: true,
+    lastTransactionSummary: "Sent 0.20 SOL",
+    color: "bg-rose-100 text-rose-700",
+    notes: "New contact, small test transfer done."
+  },
+  {
+    id: "bwalya",
+    name: "Bwalya",
+    aliases: ["bwalya", "bw"],
+    walletAddress: "5BwalyaDEV3PACKvoiceFirstSolanaWallet1bWy",
+    walletEnding: "1bWy",
+    trusted: true,
+    recent: false,
+    lastTransactionSummary: "Requested 1.00 SOL",
+    color: "bg-lime-100 text-lime-700",
+    notes: "Covers shared subscriptions."
+  },
+  {
+    id: "michael",
+    name: "Michael",
+    aliases: ["michael", "mike"],
+    walletAddress: "2MichaeDEV3PACKvoiceFirstSolanaWallet9mKl",
+    walletEnding: "9mKl",
+    trusted: true,
+    recent: true,
+    lastTransactionSummary: "Sent 0.80 SOL",
+    color: "bg-amber-100 text-amber-700",
+    notes: "Weekly coffee contributions."
+  },
+  {
+    id: "mutinta",
+    name: "Mutinta",
+    aliases: ["mutinta", "tinta", "mt"],
+    walletAddress: "8MutinDEV3PACKvoiceFirstSolanaWallet7mTn",
+    walletEnding: "7mTn",
+    trusted: false,
+    recent: false,
+    lastTransactionSummary: "Received 0.60 SOL",
+    color: "bg-purple-100 text-purple-700",
+    notes: "Occasional transfers, verify before sending."
+  },
+  {
+    id: "grace",
+    name: "Grace",
+    aliases: ["grace", "gr"],
+    walletAddress: "3GraceDEV3PACKvoiceFirstSolanaWallet2gRc",
+    walletEnding: "2gRc",
+    trusted: true,
+    recent: true,
+    lastTransactionSummary: "Received 1.50 SOL",
+    color: "bg-fuchsia-100 text-fuchsia-700",
+    notes: "Trusted for event and group payments."
+  },
+  {
+    id: "lubasi",
+    name: "Lubasi",
+    aliases: ["lubasi", "lu"],
+    walletAddress: "6LubasiDEV3PACKvoiceFirstSolanaWallet4lBs",
+    walletEnding: "4lBs",
+    trusted: true,
+    recent: false,
+    lastTransactionSummary: "Sent 0.40 SOL",
+    color: "bg-sky-100 text-sky-800",
+    notes: "Pays back promptly."
   }
 ];
